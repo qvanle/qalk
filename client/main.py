@@ -1,12 +1,16 @@
 import socket
 import os
+from dotenv import load_dotenv
 
-SERVER_HOST = 'localhost'
-SERVER_PORT = 5001
-CHUNK_SIZE = 1024 * 1024  # 1MB
-DOWNLOAD_DIR = os.path.expanduser("download")
-if not os.path.exists(DOWNLOAD_DIR):
-    os.makedirs(DOWNLOAD_DIR)
+# Load .env from parent directory
+env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path=env_path)
+
+# Fallbacks
+SERVER_HOST = os.getenv("SERVER_HOST", "localhost")
+SERVER_PORT = int(os.getenv("SERVER_PORT", "5001"))
+CHUNK_SIZE = 1024 * 1024
+DOWNLOAD_DIR = os.path.expanduser("~")
 
 def receive_file(sock, filename, filesize):
     filepath = os.path.join(DOWNLOAD_DIR, filename)
@@ -23,9 +27,8 @@ def receive_file(sock, filename, filesize):
             percent = received * 100 // filesize
             print(f"Downloading {filename} part {part_num} .... {percent}%")
             part_num += 1 if len(chunk) == CHUNK_SIZE else 0
-    print(f"Download complete: {filepath}")
 
-
+    print(f"Download complete: {filename}")
 
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

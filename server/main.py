@@ -1,11 +1,17 @@
 import socket
 import threading
 import os
+from dotenv import load_dotenv
 
-HOST = '0.0.0.0'
-PORT = 5001
-CHUNK_SIZE = 1024 * 1024  # 1MB
-DEFAULT_DIR = os.path.expanduser("~")  # Start in user's home directory
+# Load .env variables from parent directory
+env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path=env_path)
+
+# Use defaults if env vars not set
+HOST = os.getenv("SERVER_HOST", "0.0.0.0")
+PORT = int(os.getenv("SERVER_PORT", "5001"))
+CHUNK_SIZE = 1024 * 1024
+DEFAULT_DIR = os.path.expanduser("~")
 
 def handle_client(conn, addr):
     print(f"Connected by {addr}")
@@ -19,7 +25,7 @@ def handle_client(conn, addr):
         if not data:
             break
 
-        if data.upper() == "LIST" or data.upper() == "LS":
+        if data.upper() == "LIST":
             try:
                 items = os.listdir(current_dir)
                 if not items:
@@ -29,7 +35,7 @@ def handle_client(conn, addr):
                     for item in items:
                         full_path = os.path.join(current_dir, item)
                         if os.path.isdir(full_path):
-                            response_lines.append(f"\033[1;34m{item}/\033[0m")  # Bold blue
+                            response_lines.append(f"\033[1;34m{item}/\033[0m")
                         else:
                             response_lines.append(item)
                     response = "\n".join(response_lines)
