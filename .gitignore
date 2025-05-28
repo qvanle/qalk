@@ -1,0 +1,26 @@
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment and IDE files
+.env
+*.env.*
+.venv/
+env/
+venv/
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Downloads/output
+downloads/
+
